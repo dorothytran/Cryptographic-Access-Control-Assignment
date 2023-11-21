@@ -1,8 +1,8 @@
 # Dorothy Tran 101141902
-# SYSC 4810 Assignment
 import sys
-sys.path.append('./password_policy')
+sys.path.append('./user_account')
 
+""" Input to register a user to Finvest Holdings system """
 def user_registration():
     print("Would you like to register a user to the system?")
     register = str(input("Enter Yes or No: "))

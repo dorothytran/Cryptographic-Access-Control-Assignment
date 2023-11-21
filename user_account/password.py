@@ -8,8 +8,8 @@ def hash(password: str):
     return salt, password_hash
 
 """ Verifies hashed passwords """
-def verify_hash(password: str, salt: bytes, hash: bytes) -> bool:
-        generated_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
+        generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000)
         if(generated_hash == hash):
               print("Password is correct.")
               return True
@@ -17,9 +17,7 @@ def verify_hash(password: str, salt: bytes, hash: bytes) -> bool:
               print("Password is incorrect!")
               return False
         
-"""
-Helper function that uses Python regex to check if the password contains prohibited format patterns
-"""        
+""" Helper function that uses Python regex to check if the password contains prohibited format patterns """        
 def prohibited_format_check(password):
     # Prohibited password formats
     prohibited_formats = [r"\b(0[1-9]|[12]\d|3[01])[-/](0[1-9]|1[0-2])[-/](19\d\d|20\d\d)\b", # Calendar date format
@@ -33,6 +31,7 @@ def prohibited_format_check(password):
 def password_policy_check(userid: str, password: str):
     message = ""
     validPassword = False
+    
     # List of valid special characters
     special_chars = {'!','@', '#', '$', '%', '?', '∗'}
 
@@ -61,7 +60,7 @@ def password_policy_check(userid: str, password: str):
     
     # Passwords found on a list of common weak passwords must be prohibited
     for weak_pw in weak_password_list:
-        case_insensitive_wp = weak_pw.lower()
+        case_insensitive_wp = weak_pw.lower() 
         input_password = password.lower()
         if(case_insensitive_wp == input_password) :
             validPassword = False
@@ -84,7 +83,6 @@ def password_policy_check(userid: str, password: str):
     return validPassword, message
 
 # ============================================================
-# Example usage:
 #userid = "example_user"
 #password = "WeakPassw1!"
 #result, error_message = password_policy_check(userid, password)
@@ -95,6 +93,5 @@ def password_policy_check(userid: str, password: str):
 # print(f"Salt: {salt}")
 # print(f"Stored Hash: {stored_hash}")
 
-# Verify the password
 # user_input_password = input("Enter the password to verify: ")
 # verify_hash(user_input_password, salt, stored_hash)
