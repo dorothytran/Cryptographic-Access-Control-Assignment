@@ -35,9 +35,6 @@ def password_policy_check(userid: str, password: str):
     # List of valid special characters
     special_chars = {'!','@', '#', '$', '%', '?', '∗'}
 
-    # Python lists are dynamic, weak passwords can be added to the list
-    weak_password_list = ["Password1", "Qwerty123", "Qaz123wsx"]
-
     # Passwords must be least 8-12 characters in length
     if not (8 <= len(password) <= 12):
         message += "Passwords must be least 8-12 characters in length"
@@ -59,6 +56,17 @@ def password_policy_check(userid: str, password: str):
         message += "Passwords must have at least one special character from the set"
     
     # Passwords found on a list of common weak passwords must be prohibited
+    path = os.path.join("files", "weakpasswd.txt")
+    try:
+        with open(path, 'r') as file:
+            for f in file:
+                if f.startswith("userId : ") and userid == f.split(":")[1].strip():
+                    return True # Existing user in password file
+            return False # No existing user is found
+    except FileNotFoundError:
+        print(f"File {path} not found")
+        return False
+
     for weak_pw in weak_password_list:
         case_insensitive_wp = weak_pw.lower() 
         input_password = password.lower()
@@ -74,7 +82,7 @@ def password_policy_check(userid: str, password: str):
         validPassword = False
 
     # Passwords matching the user ID must be prohibited
-    if(userid == password):
+    if(userid in password):
         message += "Passwords must not match the user ID"
 
     if not message:
@@ -86,7 +94,7 @@ def password_policy_check(userid: str, password: str):
 #userid = "example_user"
 #password = "WeakPassw1!"
 #result, error_message = password_policy_check(userid, password)
-#print(error_message)
+
 
 # password = "examplePassword"
 # salt, stored_hash = hash(password)

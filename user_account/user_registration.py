@@ -1,6 +1,5 @@
 # Dorothy Tran 101141902
 import os, sys, password
-sys.path.append('./files')
 
 """ Helper function to check if a user already exists in the password file """
 def existing_user_check(userid, path) -> bool:
