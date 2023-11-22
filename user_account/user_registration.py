@@ -1,6 +1,5 @@
 # Dorothy Tran 101141902
 import os, sys, password
-sys.path.append('./password_policy')
 sys.path.append('./files')
 
 """ Helper function to check if a user already exists in the password file """
