@@ -17,6 +17,12 @@ def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
               print("Password is incorrect!")
               return False
         
+def weak_password_check(password):
+    path = os.path.join("files", "weakpasswd.txt")
+    with open(path, 'r') as file: # read into the file
+        weak_pw = [f.strip() for f in file]
+    return password in weak_pw
+        
 """ Helper function that uses Python regex to check if the password contains prohibited format patterns """        
 def prohibited_format_check(password):
     # Prohibited password formats
@@ -56,24 +62,9 @@ def password_policy_check(userid: str, password: str):
         message += "Passwords must have at least one special character from the set"
     
     # Passwords found on a list of common weak passwords must be prohibited
-    path = os.path.join("files", "weakpasswd.txt")
-    try:
-        with open(path, 'r') as file:
-            for f in file:
-                if f.startswith("userId : ") and userid == f.split(":")[1].strip():
-                    return True # Existing user in password file
-            return False # No existing user is found
-    except FileNotFoundError:
-        print(f"File {path} not found")
-        return False
-
-    for weak_pw in weak_password_list:
-        case_insensitive_wp = weak_pw.lower() 
-        input_password = password.lower()
-        if(case_insensitive_wp == input_password) :
-            validPassword = False
-        else:
-            validPassword = True
+    if weak_password_check(password):
+         validPassword = False
+         message += "Password is weak. Please use a more complex password."
         
     # Matching the format of calendar dates, license plate, telephone numbers or common numbers must be prohibited
     containsProhibitedFormat = prohibited_format_check(password)
@@ -86,7 +77,7 @@ def password_policy_check(userid: str, password: str):
         message += "Passwords must not match the user ID"
 
     if not message:
-        message = "Password is valid!"
+        message = "Success!"
         validPassword = True
     return validPassword, message
 
