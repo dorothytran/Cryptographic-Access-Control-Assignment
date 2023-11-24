@@ -1,22 +1,36 @@
 # Dorothy Tran 101141902
 import os, sys
 sys.path.append('./user_account')
-import password
+import password, user_interface
 
 # Password file that stores the userid, password and salt
 path = os.path.join("files", "passwd.txt")
 
 """ Helper function to check if a user already exists in the password file """
-def existing_user_check(userid):
+def existing_user_check(username):
     try:
         with open(path, 'r') as file:
             for f in file:
-                if f.startswith("userId : ") and userid == f.split(":")[1].strip().lower():
+                if f.startswith("username : ") and username == f.split(":")[1].strip().lower():
                     return True # Existing user in password file
             return False # No existing user is found
     except FileNotFoundError:
         print(f"File {path} not found")
         return False
+
+""" Helper method to get the last id of the password file """
+def get_last_userId() -> int:
+    try:
+        with open(path, 'r') as file:
+            last = 0
+            for f in file:
+                if f.startswith("userId : "):
+                    intValue = int(f.split(":")[1].strip())
+                    last = max(last, intValue)
+            return last
+    except FileNotFoundError:
+        print(f"File {path} not found")
+        return 0
 
 """
 Problem 4c
@@ -24,29 +38,33 @@ Problem 4c
 Function enrolls a user and checks if their inputted password complies with the password policy.
 Their userid and password is stored in a secure password file.
 """
-def enroll_user(new_userid: str, pw: str): # , role: str ADD THIS LATER!
+def enroll_user(username: str, pw: str):
+    user_role = user_interface.role_establishment_commands()
     try: 
-        if not existing_user_check(new_userid.lower()):
+        if not existing_user_check(username.lower()):
             # Check if password complies with password policy
-            result, message = password.password_policy_check(new_userid, pw)
+            result, message = password.password_policy_check(username, pw)
             
             # If the password does not comply with policy
             if not result:
                 return False, message
             else:
+                last_id_value = get_last_userId()
+                new_id = last_id_value + 1
                 salt, hash = password.hash_function(pw)
                 with open(path, "a") as f:
-                    f.write(f"userId : {new_userid}\n")
-                    # f.write(f"role : {role}\n") FIX THIS!!!
+                    f.write(f"userId : {new_id}\n")
+                    f.write(f"username: {username}")
+                    f.write(f"role : {user_role}\n") 
                     f.write(f"password : {hash}\n")
                     f.write(f"salt : {salt}\n")
-                    message = f"Sucessfully enrolled {new_userid} to Finvest Holdings."
+                    message = f"Sucessfully enrolled {username} to Finvest Holdings."
         else:
             message = "User already exists in the system. Please try again."
     except FileNotFoundError:
         message = "File not found."
         return False, message
-    return True, message
+    return True, message, user_role
 
 """
 Problem 4b

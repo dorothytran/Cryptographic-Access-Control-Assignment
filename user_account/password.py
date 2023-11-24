@@ -3,9 +3,9 @@ import hashlib, os, re
 
 """ Hashes a password with a generated random 32 byte salt """
 def hash_function(password: str):
-    salt = os.urandom(32)
-    password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)    
-    return salt, password_hash
+    password_salt = os.urandom(32)
+    password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), password_salt, 100000)    
+    return password_salt, password_hash
 
 """ Verifies hashed passwords """
 def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
@@ -25,13 +25,10 @@ def weak_password_check(input_password):
     path = os.path.join("files", "weakpasswd.txt")
     try:
         with open(path, 'r') as file:
-            weak_pw = file.read()
-            if input_password in weak_pw:
-                return False
-            #for f in file:
-            #   if f.rstrip() == input_password.rstrip():
-            #        return True # Password is weak
-            # return False # Password is not weak
+            for weak_pw in file:
+                if weak_pw.strip().lower() == input_password.lower():
+                    return True # Password is a weak
+            return False # Password is not weak
     except FileNotFoundError:
         print(f"File {path} not found")
         return False
