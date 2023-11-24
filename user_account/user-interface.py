@@ -8,6 +8,7 @@ import user_registration
 
 path = os.path.join("files", "passwd.txt")
 
+""" Interactive user interface to enroll a user while doing proactive password checking """
 def enrollment_ui():
     while True:
         # Prompt user to enter a username first to check
@@ -19,7 +20,23 @@ def enrollment_ui():
             break
         else:
             print(f"{new_userid} already exists in the system. Please try again.")
-        
+
+def role_establishment_commands():
+    print("------------------------------------------------")
+    print("Select a User Role")
+    print ("R  : Regular Client")
+    print ("TE : Teller")
+    print ("FA : Financial Advistor")
+    print ("C  : Compliance Officer")
+    print ("P  : Premium Client")
+    print ("I  : Investment Analyst")
+    print ("FP : Financial Planner")
+    print ("TS : Technical Support")
+    print()
+    role_selection = input("Select a Role: ").upper()
+    return role_selection
+
+""" Interactive user interface to login an existing user to the system """ 
 def login():  
     userid = str(input("Enter username: \n"))
     validUser = user_registration.existing_user_check(userid, path)
