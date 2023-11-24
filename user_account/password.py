@@ -25,10 +25,13 @@ def weak_password_check(input_password):
     path = os.path.join("files", "weakpasswd.txt")
     try:
         with open(path, 'r') as file:
-            for f in file:
-                if f.rstrip() == input_password.rstrip():
-                    return True # Password is weak
-            return False # Password is not weak
+            weak_pw = file.read()
+            if input_password in weak_pw:
+                return False
+            #for f in file:
+            #   if f.rstrip() == input_password.rstrip():
+            #        return True # Password is weak
+            # return False # Password is not weak
     except FileNotFoundError:
         print(f"File {path} not found")
         return False
@@ -53,54 +56,43 @@ def password_policy_check(userid: str, password: str):
 
     # Passwords must be least 8-12 characters in length
     if not (8 <= len(password) <= 12):
-        message += "Passwords must be least 8-12 characters in length"
+        message += "Passwords must be least 8-12 characters in length.\n"
     
     # At least one upper-case letter
     if not any(p.isupper() for p in password):
-        message += "Passwords must have at least one upper-case letter"
+        message += "Passwords must have at least one upper-case letter.\n"
     
     # At least one lower-case letter
     if not any(p.islower() for p in password):
-        message += "Passwords must have at least one lower-case letter"
+        message += "Passwords must have at least one lower-case letter.\n"
     
     # At least one numerical digit
     if not any(p.isdigit() for p in password):
-        message += "Passwords must have at least one numerical digit"
+        message += "Passwords must have at least one numerical digit.\n"
     
     # At least one special character from the set
     if not (any(p in special_chars for p in password)):
-        message += "Passwords must have at least one special character from the set"
+        message += "Passwords must have at least one special character from the set.\n"
     
     # Passwords found on a list of common weak passwords must be prohibited
     if weak_password_check(password):
          validPassword = False
-         message += "Password is weak. Please use a more complex password."
+         message += "Password is weak. Please use a more complex password\n"
         
     # Matching the format of calendar dates, license plate, telephone numbers or common numbers must be prohibited
     containsProhibitedFormat = prohibited_format_check(password)
     if containsProhibitedFormat:
-        message = "Invalid. Password contains format of calendar dates, license plate, telephone numbers or common numbers. Pick another password."
+        message = "Password must not contain format of calendar dates, license plate, telephone numbers or common numbers. Pick another password.\n"
         validPassword = False
 
     # Passwords matching the user ID must be prohibited
     if(userid in password):
-        message += "Passwords must not match the user ID"
+        message += "Passwords must not match the user ID\n"
 
     if not message:
-        message = "Success!"
+        message = "Input password is successful\n"
         validPassword = True
+    else: 
+        message += "Please try again."
+        validPassword = False    
     return validPassword, message
-
-# ============================================================
-#userid = "example_user"
-#password = "WeakPassw1!"
-#result, error_message = password_policy_check(userid, password)
-
-
-# password = "examplePassword"
-# salt, stored_hash = hash(password)
-# print(f"Salt: {salt}")
-# print(f"Stored Hash: {stored_hash}")
-
-# user_input_password = input("Enter the password to verify: ")
-# verify_hash(user_input_password, salt, stored_hash)

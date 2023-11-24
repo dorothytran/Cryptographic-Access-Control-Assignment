@@ -1,5 +1,5 @@
 # Dorothy Tran 101141902
-import os, sys, getpass
+import os, re, sys, getpass
 sys.path.append('./user_account')
 import user_registration
 
@@ -12,15 +12,22 @@ path = os.path.join("files", "passwd.txt")
 def enrollment_ui():
     while True:
         # Prompt user to enter a username first to check
+        # while not re.match("^[A-Za-z0-9_-]*$", new_userid):
         new_userid = input("Enter username: ")
         
         if not user_registration.existing_user_check(new_userid.lower()):
-            new_password = getpass.getpass("Enter password: ")
-            user_registration.enroll_user(new_userid, new_password)
-            break
+            #new_password = getpass.getpass("Enter password: ")
+            new_password = input("Enter password: ")
+            result, message = user_registration.enroll_user(new_userid, new_password)
+            if result: # Password complies with password policy
+                print(message)
+                break
+            else:
+                print(message)
         else:
             print(f"{new_userid} already exists in the system. Please try again.")
 
+""" Helper function for users to input a command of role selection"""
 def role_establishment_commands():
     print("------------------------------------------------")
     print("Select a User Role")
