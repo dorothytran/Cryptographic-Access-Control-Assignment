@@ -1,13 +1,17 @@
 # Dorothy Tran 101141902
-import os, sys, password
+import os, sys
+sys.path.append('./user_account')
+import password
+
+# Password file that stores the userid, password and salt
+path = os.path.join("files", "passwd.txt")
 
 """ Helper function to check if a user already exists in the password file """
-def existing_user_check(userid, path) -> bool:
-    path = os.path.join("files", "passwd.txt")
+def existing_user_check(userid):
     try:
         with open(path, 'r') as file:
             for f in file:
-                if f.startswith("userId : ") and userid == f.split(":")[1].strip():
+                if f.startswith("userId : ") and userid == f.split(":")[1].strip().lower():
                     return True # Existing user in password file
             return False # No existing user is found
     except FileNotFoundError:
@@ -20,23 +24,23 @@ Problem 4c
 Function enrolls a user and checks if their inputted password complies with the password policy.
 Their userid and password is stored in a secure password file.
 """
-def enroll_user(new_userid: str, pw: str, role: str):
-    # Check if password complies with password policy
-    result, message = password.password_policy_check(new_userid, pw)
-    # Password file that stores the userid, password and salt
-    path = os.path.join("files", "passwd.txt")
-    
-    # Password does not comply with policy
-    if not result:
-        return False, message
+def enroll_user(new_userid: str, pw: str): # , role: str ADD THIS LATER!
     try: 
-        if not existing_user_check(new_userid, path):
-            salt, hash = password.hash(pw)
-            with open(path, "a") as f:
-                f.write(f"userId : {new_userid}\n")
-                f.write(f"password : {hash}\n")
-                f.write(f"salt : {salt}\n")
-                message = "Sucessfully enrolled ", new_userid, " to system."
+        if not existing_user_check(new_userid.lower()):
+            # Check if password complies with password policy
+            result, message = password.password_policy_check(new_userid, pw)
+            
+            # If the password does not comply with policy
+            if not result:
+                return False, message
+            else:
+                salt, hash = password.hash_function(pw)
+                with open(path, "a") as f:
+                    f.write(f"userId : {new_userid}\n")
+                    # f.write(f"role : {role}\n") FIX THIS!!!
+                    f.write(f"password : {hash}\n")
+                    f.write(f"salt : {salt}\n")
+                    message = f"Sucessfully enrolled {new_userid} to Finvest Holdings."
         else:
             message = "User already exists in the system. Please try again."
     except FileNotFoundError:

@@ -2,7 +2,7 @@
 import hashlib, os, re
 
 """ Hashes a password with a generated random 32 byte salt """
-def hash(password: str):
+def hash_function(password: str):
     salt = os.urandom(32)
     password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)    
     return salt, password_hash
@@ -16,12 +16,22 @@ def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
         else:
               print("Password is incorrect!")
               return False
-        
-def weak_password_check(password):
+
+""" 
+Helper function that reads a stored file of weak common passwords and checks if an 
+input password is a weak password
+"""
+def weak_password_check(input_password):
     path = os.path.join("files", "weakpasswd.txt")
-    with open(path, 'r') as file: # read into the file
-        weak_pw = [f.strip() for f in file]
-    return password in weak_pw
+    try:
+        with open(path, 'r') as file:
+            for f in file:
+                if f.rstrip() == input_password.rstrip():
+                    return True # Password is weak
+            return False # Password is not weak
+    except FileNotFoundError:
+        print(f"File {path} not found")
+        return False
         
 """ Helper function that uses Python regex to check if the password contains prohibited format patterns """        
 def prohibited_format_check(password):
@@ -36,7 +46,7 @@ def prohibited_format_check(password):
 """ Checks if a created password complies with the password policy """
 def password_policy_check(userid: str, password: str):
     message = ""
-    validPassword = False
+    validPassword = True
     
     # List of valid special characters
     special_chars = {'!','@', '#', '$', '%', '?', '∗'}
