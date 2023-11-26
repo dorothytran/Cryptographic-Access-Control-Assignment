@@ -1,0 +1,26 @@
+from enum import *
+
+class UserRole(Enum):
+    CLIENT = 1
+    PREMIUM_CLIENT = 2
+    FINANCIAL_PLANNER = 3
+    FINANCIAL_ADVISOR = 4
+    INVESTMENT_ANALYST = 5
+    TECH_SUPPORT = 6
+    TELLER = 7
+    COMPLIANCE_OFFICER = 8
+
+class AccessControl(Enum):
+    VIEW = 1
+    MODIFY = 2
+
+class FinancialInstrument(Enum):
+    BALANCE = 1
+    CLIENT_INFO = 2
+    INVESTMENT_PORTFOLIO = 3
+    CONTACT_DETAILS = 4
+    MONEY_MARKET_INSTRUMENTS = 5
+    PRIV_CONSUMER_INSTRUMENTS = 6
+    DERIVATIVES_TRADING = 7
+    INTEREST_INSTRUMENTS = 8
+    CLIENT_ACCOUNT = 9
