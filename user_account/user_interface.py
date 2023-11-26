@@ -1,12 +1,13 @@
 # Dorothy Tran 101141902
 import os, re, sys, getpass
 sys.path.append('./user_account')
-import user_registration
+import user_registration, access_control, access_enum
 
 # TO DO LIST:
-# List what role they want to enroll to
 # Login implementation
 
+# Hard-coded values
+valid_commands = ['R','TE','FA','C','P','I','FP','TS']
 path = os.path.join("files", "passwd.txt")
 
 """ Interactive user interface to enroll a user while doing proactive password checking """
@@ -14,13 +15,15 @@ def enrollment_ui():
     while True:
         new_userid = input("Enter username: ")  # Prompt user to enter a username first to check
         if re.match("^[A-Za-z0-9_-]*$", new_userid):
-            if not user_registration.existing_user_check(new_userid.lower()):
+            existing_user = user_registration.existing_user_check(new_userid.lower())
+            if not existing_user:
                 #new_password = getpass.getpass("Enter password: ") # Hide users password when they type
                 new_password = input("Enter password: ")
-                result, message, role = user_registration.enroll_user(new_userid, new_password)
+                role = set_role_enrollment()
+                result, message = user_registration.enroll_user(new_userid, new_password, role)
                 if result: # Password complies with password policy
                     print(message)
-                    role_establishment_commands()
+                    access_control.role_permission_check(role)
                     break
                 else:
                     print(message)
@@ -43,16 +46,29 @@ def role_establishment_commands():
     print ("FP : Financial Planner")
     print ("TS : Technical Support")
     print()
-    role_selection = input("Select a Role: ").upper()
-    return role_selection
 
-valid_commands = ['R','TE','FA','C','P','I','FP','TS']
-
-"""def set_role_enrollment(selected_role: int):
-    roleSet = False
-    while selected_role != valid_commands[7]:
-        if selected_role == valid_commands[0]:"""
-
+""" Helper function to enroll a user based on input commands"""
+def set_role_enrollment():
+    role_set = False
+    while not role_set:
+        role_establishment_commands()
+        selected_role = input("Please select a role from the list: ").upper()
+        if selected_role in valid_commands:
+            role = {
+                'R': access_enum.UserRole.CLIENT,
+                'TE': access_enum.UserRole.TELLER,
+                'FA': access_enum.UserRole.FINANCIAL_ADVISOR,
+                'C': access_enum.UserRole.COMPLIANCE_OFFICER,
+                'P': access_enum.UserRole.PREMIUM_CLIENT,
+                'I': access_enum.UserRole.INVESTMENT_ANALYST,
+                'FP': access_enum.UserRole.FINANCIAL_PLANNER,
+                'TS': access_enum.UserRole.TECH_SUPPORT
+            }[selected_role]
+            print(f"Your role has been set to {role.value}")
+            role_set = True
+            return role
+        else:
+            print("Invalid command. Please select a valid role command.")
 
 """ Interactive user interface to login an existing user to the system """ 
 def login():  

@@ -72,6 +72,3 @@ def role_permission_check(role):
     print(f"- VIEW PERMISSIONS: {', '.join(map(lambda x: x.name, view_access))}")
     modify_access = access.get(access_enum.AccessControl.MODIFY, [])
     print(f"- MODIFY PERMISSIONS: {', '.join(map(lambda x: x.name, modify_access))}")
-
-# Testing the Access Control Policy
-role_permission_check(access_enum.UserRole.CLIENT)
