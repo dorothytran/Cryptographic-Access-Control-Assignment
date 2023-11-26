@@ -11,6 +11,7 @@ def existing_user_check(username):
     try:
         with open(path, 'r') as file:
             for f in file:
+                f = f.strip().lower()
                 if f.startswith("username : ") and username == f.split(":")[1].strip().lower():
                     return True # Existing user in password file
             return False # No existing user is found
@@ -53,7 +54,7 @@ def enroll_user(username: str, pw: str, user_role: str):
                 salt, hash = password.hash_function(pw)
                 with open(path, "a") as f:
                     f.write(f"userId : {new_id}\n")
-                    f.write(f"username: {username}\n")
+                    f.write(f"username : {username}\n")
                     f.write(f"role : {user_role}\n") 
                     f.write(f"password : {hash}\n")
                     f.write(f"salt : {salt}\n")

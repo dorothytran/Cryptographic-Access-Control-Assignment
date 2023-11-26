@@ -16,6 +16,32 @@ def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
         else:
               print("Password is incorrect!")
               return False
+        
+def retrieve_stored_hash_salt(username: str):
+    path = os.path.join("files", "passwd.txt")
+    try:
+        with open(path, 'r') as file:
+            for f in file:
+                    f = f.strip()
+                    if f.startswith("username : ") and username == f.split(":")[1].strip():
+                        # Username matches input username
+                        stored_password_hash = file.readline().strip()
+                        stored_password_salt = file.readline().strip()
+
+                        # Extract hashed password and salt from the lines
+                        hashed_password = re.search(r'password : (.+)', stored_password_hash).group(1)
+                        salt = re.search(r'salt : (.+)', stored_password_salt).group(1)
+
+                        # Convert strings to bytes
+                        hashed_password = bytes.fromhex(hashed_password)
+                        salt = bytes.fromhex(salt)
+
+                        return hashed_password, salt
+            # Username not found
+            return None, None
+    except FileNotFoundError:
+        print("Password file not found.")
+        return None, None
 
 """ 
 Helper function that reads a stored file of weak common passwords and checks if an 
