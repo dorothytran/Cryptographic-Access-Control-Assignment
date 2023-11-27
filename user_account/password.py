@@ -5,54 +5,26 @@ import hashlib, os, re
 def hash_function(password: str):
     password_salt = os.urandom(32)
     password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), password_salt, 100000)    
-    return password_salt, password_hash
+    salted_hash = password_hash + password_salt
+    salt = salted_hash[:32]
+    return salted_hash, salt
 
 """ Verifies hashed passwords """
-def verify_hash(input_password: str, salt: bytes, hash: bytes) -> bool:
-        generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000)
-        if(generated_hash == hash):
-              print("Password is correct.")
-              return True
-        else:
-              print("Password is incorrect!")
-              return False
+def verify_hash(input_password: str, salted_hash: bytes):
+    salt = salted_hash[:32]
+    generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000)
+    password_hash = salted_hash[32:]
+    print("Generated Hash:", generated_hash)
+    print("Stored Hash:   ", password_hash)
+    return generated_hash == password_hash
         
-def retrieve_stored_hash_salt(username: str):
-    path = os.path.join("files", "passwd.txt")
-    try:
-        with open(path, 'r') as file:
-            for f in file:
-                    f = f.strip()
-                    if f.startswith("username : ") and username == f.split(":")[1].strip():
-                        # Username matches input username
-                        stored_password_hash = file.readline().strip()
-                        stored_password_salt = file.readline().strip()
-
-                        # Extract hashed password and salt from the lines
-                        hashed_password = re.search(r'password : (.+)', stored_password_hash).group(1)
-                        salt = re.search(r'salt : (.+)', stored_password_salt).group(1)
-
-                        # Convert strings to bytes
-                        hashed_password = bytes.fromhex(hashed_password)
-                        salt = bytes.fromhex(salt)
-
-                        return hashed_password, salt
-            # Username not found
-            return None, None
-    except FileNotFoundError:
-        print("Password file not found.")
-        return None, None
-
-""" 
-Helper function that reads a stored file of weak common passwords and checks if an 
-input password is a weak password
-"""
+""" Helper function that  checks if an input password is a weak password """
 def weak_password_check(input_password):
     path = os.path.join("files", "weakpasswd.txt")
     try:
         with open(path, 'r') as file:
             for weak_pw in file:
-                if weak_pw.strip().lower() == input_password.lower():
+                if weak_pw.strip().lower() in input_password.lower():
                     return True # Password is a weak
             return False # Password is not weak
     except FileNotFoundError:
@@ -95,12 +67,12 @@ def password_policy_check(userid: str, password: str):
     
     # At least one special character from the set
     if not (any(p in special_chars for p in password)):
-        message += "Passwords must have at least one special character from the set.\n"
+        message += "Passwords must have at least one special character from: *, !, @, #, $, %, ?. \n"
     
     # Passwords found on a list of common weak passwords must be prohibited
     if weak_password_check(password):
          validPassword = False
-         message += "Password is weak. Please use a more complex password\n"
+         message += "Password is weak. Please use a strong password\n"
         
     # Matching the format of calendar dates, license plate, telephone numbers or common numbers must be prohibited
     containsProhibitedFormat = prohibited_format_check(password)
@@ -113,7 +85,6 @@ def password_policy_check(userid: str, password: str):
         message += "Passwords must not match the user ID\n"
 
     if not message:
-        message = "Input password is successful\n"
         validPassword = True
     else: 
         message += "Please try again."

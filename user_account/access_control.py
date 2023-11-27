@@ -3,7 +3,7 @@ sys.path.append('./user_account')
 import access_enum
 
 """ Access Control Policy function to set the permissions of each resource """
-def get_access_control_policy():
+def access_control_policy():
     policy = {
         access_enum.UserRole.CLIENT: {
             access_enum.AccessControl.VIEW: [access_enum.FinancialInstrument.BALANCE, 
@@ -65,10 +65,16 @@ def get_access_control_policy():
     return policy
 
 """ Helper function to state the permissions """
-def role_permission_check(role):
-    access = get_access_control_policy().get(role, {})
-    print(f"Role Permissions for {role.value}: ")
+def set_role_permission(user_role):
+    access = access_control_policy().get(user_role, {})
     view_access = access.get(access_enum.AccessControl.VIEW, [])
-    print(f"- VIEW PERMISSIONS: {', '.join(map(lambda x: x.name, view_access))}")
     modify_access = access.get(access_enum.AccessControl.MODIFY, [])
-    print(f"- MODIFY PERMISSIONS: {', '.join(map(lambda x: x.name, modify_access))}")
+    
+    print("-----------------------------------------")
+    print(f"Role Permissions for {user_role.value}: ")
+    print("-----------------------------------------")
+    print(f"* VIEW PERMISSIONS: {', '.join(map(lambda x: x.name, view_access))}")
+    if modify_access:
+        print(f"* MODIFY PERMISSIONS: {', '.join(map(lambda x: x.name, modify_access))}")
+    else:
+        print("* MODIFY PERMISSIONS: No modify permissions.")
