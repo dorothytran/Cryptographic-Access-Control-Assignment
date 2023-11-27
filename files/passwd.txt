@@ -1,0 +1,5 @@
+userId:1
+username:dorothy
+role:UserRole.CLIENT
+hash:b's5tNZGddUIaQMsuu1J/MfzdjNINkPrz1If0Ky0CuBCk='
+salt:b'b39b4d64675d50869032cbaed49fcc7f37633483643ebcf521fd0acb40ae042914e89a718f8321fac6a1637d01e7a15ed7a782b8812a97eb9d0a5a1cd77b1fa3'
