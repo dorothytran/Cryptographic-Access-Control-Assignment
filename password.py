@@ -14,9 +14,13 @@ def verify_hash(input_password: str, salted_hash: bytes):
     salt = salted_hash[:32]
     generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000)
     password_hash = salted_hash[32:]
+    
     print("Generated Hash:", generated_hash)
     print("Stored Hash:   ", password_hash)
-    return generated_hash == password_hash
+    if generated_hash == password_hash:
+        return True
+    else: 
+        return False
         
 """ Helper function that  checks if an input password is a weak password """
 def weak_password_check(input_password):
@@ -33,13 +37,16 @@ def weak_password_check(input_password):
         
 """ Helper function that uses Python regex to check if the password contains prohibited format patterns """        
 def prohibited_format_check(password):
-    # Prohibited password formats
-    prohibited_formats = [r"\b(0[1-9]|[12]\d|3[01])[-/](0[1-9]|1[0-2])[-/](19\d\d|20\d\d)\b", # Calendar date format
-                        r"^[A-Z]{4}\d{1,3}$", # License Plate format
-                        "^\d{10}$", # Telephone format ##########
-                        r"^\d{3}-\d{3}-\d{4}$", # Telephone format ###-###-####
-                        r"\b\d{4,}\b"] # Common numbers
-    return all(re.search(pattern, password) for pattern in prohibited_formats)
+    prohibited_formats = [
+                    r'\b(0[1-9]|[12]\d|3[01])[-/](0[1-9]|1[0-2])[-/](19\d\d|20\d\d)\b', # Calendar date format
+                    r'^[A-Z]{4}\d{1,3}$', # License Plate format AAAA###
+                    r'^\d{10}$', # Telephone format ##########
+                    r'^\d{3}-\d{3}-\d{4}$', # Telephone format ###-###-####
+                    r'^\d+$'] # Common numbers 123456789
+    for prohibited_pattern in prohibited_formats:
+        if re.search(prohibited_pattern, password):
+            return True  
+    return False 
         
 """ Checks if a created password complies with the password policy """
 def password_policy_check(userid: str, password: str):
@@ -84,7 +91,7 @@ def password_policy_check(userid: str, password: str):
     if(userid in password):
         message += "Passwords must not match the user ID\n"
 
-    if not message:
+    if not message: # An error message was not printed out
         validPassword = True
     else: 
         message += "Please try again."

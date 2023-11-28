@@ -61,7 +61,6 @@ def access_control_policy():
             access_enum.AccessControl.MODIFY: []  # no modifying access
         }
     }
-    
     return policy
 
 """ Helper function to state the permissions """
@@ -70,9 +69,9 @@ def set_role_permission(user_role):
     view_access = access.get(access_enum.AccessControl.VIEW, [])
     modify_access = access.get(access_enum.AccessControl.MODIFY, [])
     
-    print("---------------------------------------")
+    print("------------------------------------------------")
     print(f"Role Permissions for {user_role.value} ")
-    print("---------------------------------------")
+    print("------------------------------------------------")
     print(f"* VIEW PERMISSIONS: {', '.join(map(lambda x: x.name, view_access))}")
     if modify_access:
         print(f"* MODIFY PERMISSIONS: {', '.join(map(lambda x: x.name, modify_access))}")
