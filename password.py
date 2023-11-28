@@ -4,19 +4,17 @@ import hashlib, os, re
 """ Hashes a password with a generated random 32 byte salt """
 def hash_function(password: str):
     password_salt = os.urandom(32)
+    print(password_salt)
     password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), password_salt, 100000)    
-    salted_hash = password_hash + password_salt
+    salted_hash = password_salt + password_hash
     salt = salted_hash[:32]
     return salted_hash, salt
 
 """ Verifies hashed passwords """
-def verify_hash(input_password: str, salted_hash: bytes):
-    salt = salted_hash[:32]
-    generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000)
-    password_hash = salted_hash[32:]
-    
-    print("Generated Hash:", generated_hash)
-    print("Stored Hash:   ", password_hash)
+def verify_hash(input_password: str, salted_hash: str):
+    salt = bytes.fromhex(salted_hash[:64])
+    generated_hash = hashlib.pbkdf2_hmac('sha256', input_password.encode('utf-8'), salt, 100000).hex()
+    password_hash = salted_hash[64:]
     if generated_hash == password_hash:
         return True
     else: 

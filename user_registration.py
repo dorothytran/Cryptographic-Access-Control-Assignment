@@ -49,7 +49,7 @@ def enroll_user(username: str, pw: str, user_role: str):
             if not result:
                 return False, message
             else:        
-                salt, hash_pw = password.hash_function(cleaned_pw)
+                hash_pw, salt = password.hash_function(cleaned_pw)
 
                 # Using hexadecimal strings
                 salt_hash = hash_pw.hex()
@@ -79,3 +79,31 @@ Function checks if the user login credentials match with the credentials stored 
 - UserID is searched in the password file, take the plaintext salt and the hashcode and compare to verify
 - Implement the password verification mechanism
 """
+
+def verify_login(username, input_password):
+    message = ""
+    try:
+        with open(path, 'r') as file:
+            data = file.read().splitlines()
+
+            # Iterate through the data in chunks of 5 lines
+            for i in range(0, len(data), 5):
+                if f'username:{username}' in data[i:i + 5]:
+                    matching_user = data[i:i + 5]
+                    break
+            else:
+                print("User not found.")
+                return False
+
+        # Extract stored salted hash and salt from the matching user data
+        stored_hex_hash = matching_user[3][5:]
+        stored_hex_salt = matching_user[4][5:]
+        
+        if password.verify_hash(input_password, stored_hex_hash):
+            return True
+        else:
+            print("Invalid password.")
+            return False
+    except FileNotFoundError:
+        message = "File not found."
+        return False
