@@ -1,11 +1,9 @@
-import sys
-sys.path.append('./user_account')
 import access_enum
 
 """ Access Control Policy function to set the permissions of each resource """
 def access_control_policy():
     policy = {
-        access_enum.UserRole.CLIENT: {
+        access_enum.UserRole.REGULAR_CLIENT: {
             access_enum.AccessControl.VIEW: [access_enum.FinancialInstrument.BALANCE, 
                                              access_enum.FinancialInstrument.INVESTMENT_PORTFOLIO, 
                                              access_enum.FinancialInstrument.CONTACT_DETAILS],

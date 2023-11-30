@@ -1,13 +1,6 @@
 # Dorothy Tran 101141902
-import os, re, sys, getpass
-sys.path.append('./user_account')
+import os, re, getpass
 import user_registration, access_control, access_enum
-
-# TO DO LIST
-# - Verify login functionality
-# - Loop the user interface to login when a user registers into the system once it works
-# - Do the last access control policy coding... 
-# - Fix prohibited password policy check :(
 
 # Hard-coded values
 valid_commands = ['R','TE','FA','C','P','I','FP','TS']
@@ -35,7 +28,7 @@ def set_role_enrollment():
         selected_role = input("Please select a role from the list: ").upper()
         if selected_role in valid_commands:
             role = {
-                'R':    access_enum.UserRole.CLIENT,
+                'R':    access_enum.UserRole.REGULAR_CLIENT,
                 'TE':   access_enum.UserRole.TELLER,
                 'FA':   access_enum.UserRole.FINANCIAL_ADVISOR,
                 'C':    access_enum.UserRole.COMPLIANCE_OFFICER,
@@ -65,7 +58,8 @@ def enrollment_ui():
                     print(message)
                     access_control.set_role_permission(user_role)
                     print(f"Your role has been set to {user_role.value}")
-                    break 
+                    login() # Prompt a user to log in after registering
+                    break
                 else:
                     print(message)
                     print("Please re-enter credentials:")
@@ -76,16 +70,20 @@ def enrollment_ui():
 
 """ Interactive user interface to login an existing user to the system """ 
 def login():  
+    print("------------------------------------------------")
+    print("                 User Login                     ")
+    print("------------------------------------------------")
     input_username = input("Enter username: ").lower()
     existing_user = user_registration.existing_user_check(input_username)
     
     if existing_user:
-        # getpass.getpass("Create a password: ") # Hide users password when they type
-        input_password = input("Enter your password: ")
+        input_password = getpass.getpass("Enter your password: ") # Hide users password when they type
         valid = user_registration.verify_login(input_username.lower(), input_password)
         if valid:
             print("ACCESS GRANTED")
+            user_registration.get_client_information(input_username)
         else:
+            print("ACCESS DENIED")
             print("Password is invalid")
     else:
         print(f"The username {input_username} does not exist in the system. Please try again.")
@@ -106,9 +104,6 @@ def user_interface():
         print("------------------------------------------------")
         enrollment_ui()
     elif register_user == "N":
-        print("------------------------------------------------")
-        print("                 User Login                     ")
-        print("------------------------------------------------")
         login()
     else:
         print("Invalid command. Please type 'Y' or 'N'")

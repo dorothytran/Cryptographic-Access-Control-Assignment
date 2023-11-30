@@ -4,7 +4,6 @@ import hashlib, os, re
 """ Hashes a password with a generated random 32 byte salt """
 def hash_function(password: str):
     password_salt = os.urandom(32)
-    print(password_salt)
     password_hash = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), password_salt, 100000)    
     salted_hash = password_salt + password_hash
     salt = salted_hash[:32]
