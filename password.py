@@ -94,3 +94,15 @@ def password_policy_check(userid: str, password: str):
         message += "Please try again."
         validPassword = False    
     return validPassword, message
+
+# Tests
+# username = "testuser"
+# testpassword1 = "test123"
+# valid, message = password_policy_check(username, testpassword1)
+# testpassword2 = "Averylongpassword1!"
+# valid, message = password_policy_check(username, testpassword2)
+# testpassword3 = "testuser"
+# valid, message = password_policy_check(username, testpassword3)
+# testpassword4 = "6130000000"
+# valid, message = password_policy_check(username, testpassword4)
+# print(message)

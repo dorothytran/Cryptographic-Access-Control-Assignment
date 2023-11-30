@@ -73,20 +73,24 @@ def login():
     print("------------------------------------------------")
     print("                 User Login                     ")
     print("------------------------------------------------")
-    input_username = input("Enter username: ").lower()
-    existing_user = user_registration.existing_user_check(input_username)
-    
-    if existing_user:
-        input_password = getpass.getpass("Enter your password: ") # Hide users password when they type
-        valid = user_registration.verify_login(input_username.lower(), input_password)
-        if valid:
-            print("ACCESS GRANTED")
-            user_registration.get_client_information(input_username)
+    while True:
+        input_username = input("Enter username: ").lower()
+        existing_user = user_registration.existing_user_check(input_username)
+        
+        if existing_user:
+            input_password = getpass.getpass("Enter your password: ") # Hide users password when they type
+            valid = user_registration.verify_login(input_username.lower(), input_password)
+            if valid:
+                print("ACCESS GRANTED")
+                user_registration.get_client_information(input_username)
+            else:
+                print("ACCESS DENIED")
+                print("Password is invalid. Please try again.")
+                print("------------------------------------------------")
+                print("                 User Login                     ")
+                print("------------------------------------------------")
         else:
-            print("ACCESS DENIED")
-            print("Password is invalid")
-    else:
-        print(f"The username {input_username} does not exist in the system. Please try again.")
+            print(f"The username '{input_username}' does not exist in the system. Please try again.")
 
 
 """ User Interface of Finvest Holdings to manage users"""

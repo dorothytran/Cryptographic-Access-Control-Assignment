@@ -1,6 +1,6 @@
 # Dorothy Tran 101141902
 import os
-import password, access_control
+import password, access_enum
 
 # Password file that stores the userid, password and salt
 path = os.path.join("files", "passwd.txt")
@@ -136,3 +136,10 @@ def get_client_information(username):
     except FileNotFoundError:
         print(f"File not found at path: {path}")
         return None
+    
+# Tests
+test_username = "VeronicaSaro"
+test_password = "TestPass1!"
+role = access_enum.UserRole.INVESTMENT_ANALYST
+enrolled, message = enroll_user(test_username, test_password, role)
+print(message)

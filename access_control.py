@@ -69,9 +69,18 @@ def set_role_permission(user_role):
     
     print("------------------------------------------------")
     print(f"Role Permissions for {user_role.value} ")
-    print("------------------------------------------------")
     print(f"* VIEW PERMISSIONS: {', '.join(map(lambda x: x.name, view_access))}")
     if modify_access:
         print(f"* MODIFY PERMISSIONS: {', '.join(map(lambda x: x.name, modify_access))}")
     else:
         print("* MODIFY PERMISSIONS: No modify permissions.")
+
+# Tests
+# set_role_permission(access_enum.UserRole.REGULAR_CLIENT)
+# set_role_permission(access_enum.UserRole.PREMIUM_CLIENT)
+# set_role_permission(access_enum.UserRole.FINANCIAL_PLANNER)
+# set_role_permission(access_enum.UserRole.FINANCIAL_ADVISOR)
+# set_role_permission(access_enum.UserRole.INVESTMENT_ANALYST)
+# set_role_permission(access_enum.UserRole.TECH_SUPPORT)
+# set_role_permission(access_enum.UserRole.TELLER)
+# set_role_permission(access_enum.UserRole.COMPLIANCE_OFFICER)
