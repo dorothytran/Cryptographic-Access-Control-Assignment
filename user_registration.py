@@ -36,7 +36,7 @@ def last_file_userId():
 
 """
 Problem 4c
-2.1.1 User Enrolment: Loading a Password
+2.1.1 User Enrollment: Loading a Password
 Function enrolls a user and checks if their inputted password complies with the password policy.
 Their userid and password is stored in a secure password file.
 """
@@ -75,19 +75,19 @@ Function checks if the user login credentials match with the credentials stored 
 - UserID is searched in the password file, take the plaintext salt and the hashcode and compare to verify
 - Implement the password verification mechanism
 """
-
-def verify_login(username, input_password):
+def verify_password(username, input_password):
     try:
         with open(path, 'r') as file:
             user_info = file.read().splitlines()
-            for i in range(0, len(user_info), 5):  # Iterate through the data in 5 lines
-                if f'username:{username}' in user_info[i:i + 5]:
+            # Iterate through 5 lines in the password file
+            for i in range(0, len(user_info), 5):
+                if f"username:{username}" in user_info[i:i + 5]:
                     user_found = user_info[i:i + 5]
                     break
             else:
                 return False 
-        stored_hash = user_found[3][5:] # Extract stored salted hash and salt
-        if password.verify_hash(input_password, stored_hash):
+        stored_hash = user_found[3][5:] # Get stored hash from the password file
+        if password.verify_hash(input_password, stored_hash): # Verify password hash and concatenated salt
             return True
         else:
             return False
@@ -96,27 +96,25 @@ def verify_login(username, input_password):
         return False
 
 """ Function that parses the password file and retrieves the user id """
-def get_stored_userid(username):
+def get_stored_userid(input_username):
     try:
         with open(path, 'r') as file:
             lastLine = ""
             for f in file:
                 if f.startswith("username:"):
                     lines = f.strip().split('\n')[0]
-                    d = lines.split(':')
-                    if len(d) != 2:
+                    data = lines.split(':')
+                    if len(data) != 2:
                         return None
-                    
-                    stored_username=d[1]
-                    if stored_username == username:
+                    stored_username = data[1]
+                    if stored_username == input_username:
                         id = lastLine.split(':')
                         if len(id) != 2:
                             return None
-                        
                         print("UserId:", id[1])
                         return id[1]
                 lastLine = f
-            return None
+            return None # If the username is not found
     except FileNotFoundError:
         print(f"File {path} not found")
         return False
@@ -139,10 +137,30 @@ def get_role(role_str):
         return access_enum.UserRole.TELLER
     elif role_str == "UserRole.COMPLIANCE_OFFICER":
         return access_enum.UserRole.COMPLIANCE_OFFICER
-    return None
+    else:
+        return None
 
 """ Function that parses the password file and retrieves the user role """
-    
+def get_stored_user_role(input_username):
+    try:
+        with open(path, 'r') as file:
+            userData = file.read().split("userId:")
+            for data in userData:
+                trimmedData = data.strip() # trim the whitespaces
+                if trimmedData:
+                    extracted_user_info = {}
+                    fileLines = trimmedData.split("\n") # split the lines in the password file
+                    for f in fileLines:
+                        if ':' in f:
+                            key, value = f.split(":",1)
+                            extracted_user_info[key.strip()] = value.strip() # trim the whitespaces
+                    if ("username" in extracted_user_info) and (extracted_user_info['username'] == input_username):
+                        # Print out the role permissions for the user's role
+                        return access_control.print_role_permission(get_role(extracted_user_info.get('role', None)))
+        return None # user was not found
+    except FileNotFoundError:
+        return None
+        
 # Tests
 # test_username = "VeronicaSaro"
 # test_password = "TestPass1!"

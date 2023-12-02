@@ -13,6 +13,7 @@ class UserRole(Enum):
 class AccessControl(Enum):
     VIEW = "VIEW"
     MODIFY = "MODIFY"
+    EXECUTE = "EXECUTE"
 
 class FinancialInstrument(Enum):
     BALANCE = "BALANCE"

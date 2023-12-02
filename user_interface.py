@@ -79,11 +79,12 @@ def login():
         
         if existing_user:
             input_password = getpass.getpass("Enter your password: ") # Hide users password when they type
-            valid = user_registration.verify_login(input_username.lower(), input_password)
+            valid = user_registration.verify_password(input_username.lower(), input_password)
             if valid:
                 print("ACCESS GRANTED")
                 # Print out user id and permissions
                 user_registration.get_stored_userid(input_username)
+                user_registration.get_stored_user_role(input_username)
                 break
             else:
                 print("ACCESS DENIED")
