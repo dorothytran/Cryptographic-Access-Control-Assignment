@@ -1,6 +1,6 @@
 # Dorothy Tran 101141902
 import os
-import password, access_enum
+import password, access_enum, access_control
 
 # Password file that stores the userid, password and salt
 path = os.path.join("files", "passwd.txt")
@@ -90,56 +90,62 @@ def verify_login(username, input_password):
         if password.verify_hash(input_password, stored_hash):
             return True
         else:
-            print("Invalid password.")
             return False
     except FileNotFoundError:
         message = "File not found."
         return False
-    
-def extract_pw_file_info():
-    user_info_list = []
-    with open(path, 'r') as file:
-        userData = file.readlines()
-        for data in userData:
-            user_info = {}
-            for key, value in (pair.split(':') for pair in data.strip().split('\n')):
-                user_info[key.strip()] = value.strip()
-            user_info_list.append(user_info)
-    return user_info_list
 
-def get_client_information(username):
+""" Function that parses the password file and retrieves the user id """
+def get_stored_userid(username):
     try:
         with open(path, 'r') as file:
-            user_data = file.read()
-        
-        entries = user_data.strip().split('\n\n')
-
-        for entry in entries:
-            lines = entry.strip().split('\n')
-            user_info = {}
-
-            for line in lines:
-                key, value = line.split(':')
-                user_info[key.strip()] = value.strip()
-
-            # Check if the current entry corresponds to the given username
-            if user_info.get('username') == username:
-                print("User Id:", user_info.get('userId'))
-                print("Role: ", user_info.get('role'))
-                #access_control.set_role_permission(user_info.get('role'))
-                return {
-                    'userId': user_info.get('userId'),
-                    'role': user_info.get('role')
-                }
-        return None
-
+            lastLine = ""
+            for f in file:
+                if f.startswith("username:"):
+                    lines = f.strip().split('\n')[0]
+                    d = lines.split(':')
+                    if len(d) != 2:
+                        return None
+                    
+                    stored_username=d[1]
+                    if stored_username == username:
+                        id = lastLine.split(':')
+                        if len(id) != 2:
+                            return None
+                        
+                        print("UserId:", id[1])
+                        return id[1]
+                lastLine = f
+            return None
     except FileNotFoundError:
-        print(f"File not found at path: {path}")
-        return None
+        print(f"File {path} not found")
+        return False
+
+""" Switch case function to get the UserRole enum"""
+def get_role(role_str):
+    if role_str == "UserRole.REGULAR_CLIENT":
+        return access_enum.UserRole.REGULAR_CLIENT
+    elif role_str == "UserRole.PREMIUM_CLIENT":
+        return access_enum.UserRole.PREMIUM_CLIENT
+    elif role_str == "UserRole.FINANCIAL_PLANNER":
+        return access_enum.UserRole.FINANCIAL_PLANNER
+    elif role_str == "UserRole.FINANCIAL_ADVISOR":
+        return access_enum.UserRole.FINANCIAL_ADVISOR
+    elif role_str == "UserRole.INVESTMENT_ANALYST":
+        return access_enum.UserRole.INVESTMENT_ANALYST
+    elif role_str == "UserRole.TECH_SUPPORT":
+        return access_enum.UserRole.TECH_SUPPORT
+    elif role_str == "UserRole.TELLER":
+        return access_enum.UserRole.TELLER
+    elif role_str == "UserRole.COMPLIANCE_OFFICER":
+        return access_enum.UserRole.COMPLIANCE_OFFICER
+    return None
+
+""" Function that parses the password file and retrieves the user role """
     
 # Tests
-test_username = "VeronicaSaro"
-test_password = "TestPass1!"
-role = access_enum.UserRole.INVESTMENT_ANALYST
-enrolled, message = enroll_user(test_username, test_password, role)
-print(message)
+# test_username = "VeronicaSaro"
+# test_password = "TestPass1!"
+# role = access_enum.UserRole.INVESTMENT_ANALYST
+# enrolled, message = enroll_user(test_username, test_password, role)
+# print(message)

@@ -56,7 +56,7 @@ def enrollment_ui():
                 validPassword, message = user_registration.enroll_user(new_username, new_password, user_role)
                 if validPassword:
                     print(message)
-                    access_control.set_role_permission(user_role)
+                    access_control.print_role_permission(user_role)
                     print(f"Your role has been set to {user_role.value}")
                     login() # Prompt a user to log in after registering
                     break
@@ -82,7 +82,9 @@ def login():
             valid = user_registration.verify_login(input_username.lower(), input_password)
             if valid:
                 print("ACCESS GRANTED")
-                user_registration.get_client_information(input_username)
+                # Print out user id and permissions
+                user_registration.get_stored_userid(input_username)
+                break
             else:
                 print("ACCESS DENIED")
                 print("Password is invalid. Please try again.")
