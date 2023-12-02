@@ -15,7 +15,6 @@ This program can be executed by these following steps:
 ```
 > python user_interface.py
 ```
-4. I
 
 ## RESULTS
 After compiling the user_interface.py file, the command line should prompt you to register a user or not.
