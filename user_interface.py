@@ -1,4 +1,4 @@
-# Dorothy Tran 101141902
+# Dorothy Tran
 import os, re, getpass
 import user_registration, access_control, access_enum
 
