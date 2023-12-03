@@ -1,4 +1,4 @@
-# Dorothy Tran 101141902
+# Dorothy Tran
 import hashlib, os, re
 
 """ Hashes a password with a generated random 32 byte salt """
